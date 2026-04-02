@@ -23,24 +23,30 @@ async function main() {
   });
 
   const services = [
-    'Botox',
-    'Preenchimento Labial',
-    'Bioestimuladores de Colágeno',
-    'Fios de PDO',
-    'Harmonização Facial',
-    'Limpeza de Pele',
-    'Criomodelação',
-    'Drenagem Linfática',
+    { name: 'Botox', retouchDaysMin: 120, retouchDaysMax: 180 },
+    { name: 'Preenchimento Labial', retouchDaysMin: 180, retouchDaysMax: 365 },
+    { name: 'Bioestimuladores de Colágeno', retouchDaysMin: 180, retouchDaysMax: 365 },
+    { name: 'Fios de PDO', retouchDaysMin: 180, retouchDaysMax: 365 },
+    { name: 'Harmonização Facial', retouchDaysMin: 180, retouchDaysMax: 365 },
+    { name: 'Limpeza de Pele', retouchDaysMin: 30, retouchDaysMax: 60 },
+    { name: 'Criomodelação', retouchDaysMin: 30, retouchDaysMax: 60 },
+    { name: 'Drenagem Linfática', retouchDaysMin: 15, retouchDaysMax: 30 },
   ];
 
-  for (const name of services) {
+  for (const service of services) {
     await prisma.service.upsert({
-      where: { name },
-      update: { active: true },
+      where: { name: service.name },
+      update: {
+        active: true,
+        retouchDaysMin: service.retouchDaysMin,
+        retouchDaysMax: service.retouchDaysMax,
+      },
       create: {
-        name,
+        name: service.name,
         category: 'estetica',
         durationMinutes: 45,
+        retouchDaysMin: service.retouchDaysMin,
+        retouchDaysMax: service.retouchDaysMax,
         active: true,
       },
     });

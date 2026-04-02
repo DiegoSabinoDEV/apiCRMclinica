@@ -1,74 +1,65 @@
 # CRM Harmonny - Contrato de API
 
-## 1. Padrão
+## Padrão
 - Base URL: `/api/v1`
 - Formato: JSON
 - Autenticação: JWT + RBAC
-- Webhooks: assinatura HMAC
 
-## 2. Endpoints principais
-
-### Autenticação
+## Autenticação
 - `GET /auth/me`
 - `POST /auth/login`
 
-### Leads
+## Leads
 - `POST /leads`
 - `GET /leads`
-- `GET /leads/:id`
-- `PATCH /leads/:id/status`
-- `PATCH /leads/:id/assign`
 
-### Pacientes
+## Pacientes
 - `POST /patients`
 - `GET /patients`
-- `GET /patients/:id`
-- `PATCH /patients/:id`
+- `GET /patients/:patientId`
 
-### Prontuário e fotos
-- `POST /consultations`
-- `GET /patients/:patientId/consultations`
-- `POST /photos/before-after`
-- `GET /patients/:patientId/photos`
-
-### Serviços
+## Serviços
 - `GET /services`
 - `POST /services`
 
-### Agenda
+## Agenda
 - `POST /appointments`
 - `GET /appointments`
-- `PATCH /appointments/:id`
-- `POST /appointments/:id/confirm`
 
-### Prontuário
+## Prontuário
 - `POST /consultations`
-- `GET /patients/:id/consultations`
-- `POST /procedures`
-- `GET /patients/:id/procedures`
+- `GET /patients/:patientId/consultations`
 
-### Fotos clínicas
+## Fotos clínicas
+- `POST /uploads/image`
 - `POST /photos/before-after`
-- `GET /patients/:id/photos`
+- `GET /patients/:patientId/photos`
 
-### Estoque
+## Consentimentos
+- `POST /consents`
+- `GET /patients/:patientId/consents`
+
+## Busca e alertas
+- `GET /search?q=`
+- `GET /alerts/retouch`
+
+## Estoque
 - `POST /inventory/movements`
 - `GET /inventory/items`
 - `GET /inventory/alerts`
 
-### Financeiro
+## Financeiro
 - `POST /invoices`
 - `POST /payments`
-- `GET /patients/:id/financial`
+- `GET /patients/:patientId/financial`
 
-### Integrações
+## Integrações
+- `POST /webhooks/landing`
 - `POST /webhooks/evolution`
-- `POST /webhooks/google-calendar`
-- `POST /webhooks/payment-gateway`
 
-## 3. Payloads essenciais
+## Payloads essenciais
 
-### Criar lead
+### Lead
 ```json
 {
   "contactName": "Maria Silva",
@@ -80,32 +71,28 @@
 }
 ```
 
-### Registrar procedimento
+### Consulta
 ```json
 {
-  "patient_id": "uuid",
-  "service_id": "uuid",
-  "professional_id": "uuid",
-  "performed_at": "2026-04-02T12:00:00Z",
-  "dosage": {
-    "toxina_unidades": 48,
-    "areas": ["fronte", "glabela"]
-  }
+  "patientId": "uuid",
+  "anamnesisJson": { "alergias": false },
+  "clinicalNotes": "Paciente bem, sem intercorrências",
+  "recommendedPlan": "Botox frontal e glabela"
 }
 ```
 
-### Registrar pagamento
+### Consentimento
 ```json
 {
-  "invoice_id": "uuid",
-  "amount": 350,
-  "method": "pix",
-  "gateway_transaction_id": "tx_123"
+  "patientId": "uuid",
+  "consentType": "uso de imagem",
+  "fileUrl": "https://.../termo.pdf",
+  "metadata": { "signedBy": "Maria Silva" }
 }
 ```
 
-## 4. Regras de integração
-- Toda origem de lead deve gerar `source_channel`.
+## Regras de integração
+- Toda origem de lead deve gerar `sourceChannel`.
 - Todo procedimento realizado deve disparar baixa de estoque.
 - Todo pagamento deve atualizar o status da fatura.
 - Todo procedimento elegível deve gerar alerta de recorrência.

@@ -8,10 +8,13 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
+    "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
+    "@fastify/multipart": "^8.3.1",
+    "@fastify/static": "^7.0.4",
     "bcryptjs": "^2.4.3",
     "fastify": "^4.28.1",
     "@fastify/cors": "^9.0.1",

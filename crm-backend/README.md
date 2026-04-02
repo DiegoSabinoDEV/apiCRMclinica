@@ -43,6 +43,11 @@ Backend inicial do CRM da Harmonny, pronto para conectar a landing, n8n e Evolut
 - `GET /api/v1/appointments`
 - `POST /api/v1/photos/before-after`
 - `GET /api/v1/patients/:patientId/photos`
+- `POST /api/v1/uploads/image`
+- `POST /api/v1/consents`
+- `GET /api/v1/patients/:patientId/consents`
+- `GET /api/v1/alerts/retouch`
+- `GET /api/v1/search?q=`
 - `POST /api/v1/webhooks/landing`
 - `POST /api/v1/webhooks/evolution`
 

@@ -50,6 +50,8 @@ Foi criado um frontend inicial com:
 - Tela de pacientes
 - Tela de agenda
 - Tela de prontuário 360° por paciente
+- Busca global no dashboard
+- Alertas de retoque automáticos
 - Layout premium com cores bronze, ouro e oliva
 - Logo vetorial própria da Harmonny para uso interno do CRM
 
@@ -74,6 +76,9 @@ Também foram entregues:
 - Controlar estoque por movimentação
 - Registrar anamnese e evolução clínica
 - Organizar galeria de fotos antes/depois
+- Fazer upload real de imagens clínicas
+- Registrar consentimentos digitais e termos assinados
+- Pesquisar globalmente leads, pacientes e agenda
 - Expor base pronta para automação no n8n
 
 8. O QUE AINDA PODE SER FEITO
@@ -88,6 +93,7 @@ Também foram entregues:
 - Integração com Google Calendar e gateway de pagamento
 - Interface mobile/tablet mais refinada
 - Auditoria avançada e logs de segurança
+- Upload em nuvem e storage persistente para imagens clínicas
 
 9. TECNOLOGIA SUGERIDA
 

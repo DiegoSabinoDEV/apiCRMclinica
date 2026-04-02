@@ -8,6 +8,7 @@ import { apiFetch } from '@/lib/api';
 
 type Consultation = { id: string; clinicalNotes?: string; recommendedPlan?: string; createdAt: string };
 type Photo = { id: string; photoType: 'before' | 'after'; fileUrl: string; tags: string[]; takenAt: string };
+type Consent = { id: string; consentType: string; signedAt?: string; fileUrl?: string; createdAt: string };
 type Patient = {
   id: string;
   fullName: string;
@@ -16,6 +17,7 @@ type Patient = {
   notes?: string;
   consultations: Consultation[];
   photos: Photo[];
+  consents: Consent[];
   appointments: { id: string; scheduledAt: string; status: string }[];
 };
 
@@ -25,6 +27,8 @@ export default function PatientDetailPage() {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [consultation, setConsultation] = useState({ notes: '', plan: '' });
   const [photo, setPhoto] = useState({ type: 'before' as 'before' | 'after', url: '', tags: '' });
+  const [consent, setConsent] = useState({ type: '', url: '' });
+  const [uploading, setUploading] = useState(false);
 
   async function loadPatient() {
     const response = await apiFetch(`/api/v1/patients/${params.id}`);
@@ -60,6 +64,37 @@ export default function PatientDetailPage() {
       }),
     });
     setPhoto({ type: 'before', url: '', tags: '' });
+    await loadPatient();
+  }
+
+  async function uploadPhoto(file: File) {
+    const token = window.localStorage.getItem('harmonny_token');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'}/api/v1/uploads/image`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data?.error || 'Upload falhou');
+    setPhoto((current) => ({ ...current, url: data.fileUrl }));
+  }
+
+  async function saveConsent() {
+    await apiFetch('/api/v1/consents', {
+      method: 'POST',
+      body: JSON.stringify({
+        patientId: params.id,
+        consentType: consent.type,
+        fileUrl: consent.url || undefined,
+        metadata: { source: 'crm', signedBy: patient.fullName },
+      }),
+    });
+
+    setConsent({ type: '', url: '' });
     await loadPatient();
   }
 
@@ -109,6 +144,16 @@ export default function PatientDetailPage() {
             <button className="btn btn-primary" onClick={savePhoto}>Salvar foto</button>
           </div>
           <div className="form-row">
+            <label className="field" style={{ gridColumn: '1 / -1' }}>
+              <span>Upload de imagem</span>
+              <input type="file" accept="image/*" onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setUploading(true);
+                uploadPhoto(file).catch(() => undefined).finally(() => setUploading(false));
+              }} />
+              <small className="muted">{uploading ? 'Enviando...' : 'Opcional: envie a imagem e o sistema preenche a URL automaticamente.'}</small>
+            </label>
             <label className="field">
               <span>Tipo</span>
               <select value={photo.type} onChange={(e) => setPhoto({ ...photo, type: e.target.value as 'before' | 'after' })}>
@@ -123,6 +168,26 @@ export default function PatientDetailPage() {
             <label className="field" style={{ gridColumn: '1 / -1' }}>
               <span>Tags</span>
               <input value={photo.tags} onChange={(e) => setPhoto({ ...photo, tags: e.target.value })} placeholder="ex: botox, testa, frontal" />
+            </label>
+          </div>
+        </section>
+
+        <section className="section panel">
+          <div className="section-header">
+            <div>
+              <div className="eyebrow">Consentimento</div>
+              <h2>Termos assinados</h2>
+            </div>
+            <button className="btn btn-primary" onClick={saveConsent}>Salvar consentimento</button>
+          </div>
+          <div className="form-row">
+            <label className="field">
+              <span>Tipo de termo</span>
+              <input value={consent.type} onChange={(e) => setConsent({ ...consent, type: e.target.value })} placeholder="ex: uso de imagem" />
+            </label>
+            <label className="field">
+              <span>URL do arquivo assinado</span>
+              <input value={consent.url} onChange={(e) => setConsent({ ...consent, url: e.target.value })} placeholder="link do pdf ou arquivo" />
             </label>
           </div>
         </section>
@@ -175,6 +240,33 @@ export default function PatientDetailPage() {
                   <td><span className="badge">{item.photoType}</span></td>
                   <td>{item.tags.join(', ')}</td>
                   <td>{item.fileUrl}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <section className="section table-card">
+          <div className="section-header">
+            <div>
+              <div className="eyebrow">Consentimentos</div>
+              <h2>Termos e autorizações</h2>
+            </div>
+          </div>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Data</th>
+                <th>Arquivo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patient.consents.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.consentType}</td>
+                  <td>{new Date(item.signedAt || item.createdAt).toLocaleString('pt-BR')}</td>
+                  <td>{item.fileUrl || 'Sem arquivo'}</td>
                 </tr>
               ))}
             </tbody>

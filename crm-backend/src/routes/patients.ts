@@ -27,6 +27,7 @@ export async function patientRoutes(app: FastifyInstance) {
         consultations: { orderBy: { createdAt: 'desc' } },
         photos: { orderBy: { takenAt: 'desc' } },
         appointments: { orderBy: { scheduledAt: 'desc' } },
+        consents: { orderBy: { createdAt: 'desc' } },
       },
     });
 
