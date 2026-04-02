@@ -6,6 +6,7 @@ Backend inicial do CRM da Harmonny, pronto para conectar a landing, n8n e Evolut
 - Health check.
 - Autenticação por JWT e perfis de acesso.
 - Rotas de leads, pacientes, serviços, agenda, prontuário, estoque e financeiro.
+- Rotas de fotos clínicas antes/depois.
 - Webhook para receber a landing.
 - Validação com Zod.
 - Prisma com PostgreSQL.
@@ -35,10 +36,13 @@ Backend inicial do CRM da Harmonny, pronto para conectar a landing, n8n e Evolut
 - `GET /api/v1/leads`
 - `POST /api/v1/patients`
 - `GET /api/v1/patients`
+- `GET /api/v1/patients/:patientId`
 - `POST /api/v1/services`
 - `GET /api/v1/services`
 - `POST /api/v1/appointments`
 - `GET /api/v1/appointments`
+- `POST /api/v1/photos/before-after`
+- `GET /api/v1/patients/:patientId/photos`
 - `POST /api/v1/webhooks/landing`
 - `POST /api/v1/webhooks/evolution`
 

@@ -49,6 +49,7 @@ Foi criado um frontend inicial com:
 - Tela de leads
 - Tela de pacientes
 - Tela de agenda
+- Tela de prontuário 360° por paciente
 - Layout premium com cores bronze, ouro e oliva
 - Logo vetorial própria da Harmonny para uso interno do CRM
 
@@ -71,12 +72,14 @@ Também foram entregues:
 - Guardar histórico clínico inicial
 - Registrar faturas e pagamentos
 - Controlar estoque por movimentação
+- Registrar anamnese e evolução clínica
+- Organizar galeria de fotos antes/depois
 - Expor base pronta para automação no n8n
 
 8. O QUE AINDA PODE SER FEITO
 
 - Prontuário 360 completo com anamnese detalhada
-- Galeria de antes e depois por procedimento
+- Galeria de antes e depois por procedimento e paciente
 - Alertas de retoque e recorrência
 - BI com funil, LTV e performance comercial
 - Fluxos automáticos de reativacao

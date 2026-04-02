@@ -25,6 +25,12 @@
 - `GET /patients/:id`
 - `PATCH /patients/:id`
 
+### Prontuário e fotos
+- `POST /consultations`
+- `GET /patients/:patientId/consultations`
+- `POST /photos/before-after`
+- `GET /patients/:patientId/photos`
+
 ### Serviços
 - `GET /services`
 - `POST /services`
