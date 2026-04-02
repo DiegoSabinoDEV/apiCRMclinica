@@ -48,6 +48,7 @@ Veja:
 
 - `docs/checklist-lancamento.md`
 - `docs/teste-manual-aceite.md`
+- `docs/cronograma-sprints.md`
 - `scripts/README.md`
 
 ## Status
