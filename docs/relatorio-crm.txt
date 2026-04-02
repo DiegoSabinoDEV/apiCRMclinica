@@ -115,3 +115,9 @@ A arquitetura foi pensada para evoluir de forma modular, começando pequena e co
 - CRM previsto em crm.clinicaharmonny.com.br
 - API recomendada em api.crm.clinicaharmonny.com.br
 - Guia de deploy e DNS documentado em docs/deploy-dominios-hostinger.md
+
+12. OPERACAO E MANUTENCAO
+
+- Checklist de lançamento em docs/checklist-lancamento.md
+- Teste manual de aceite em docs/teste-manual-aceite.md
+- Backup e restore do banco em scripts/
