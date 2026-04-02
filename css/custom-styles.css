@@ -237,6 +237,12 @@ a {
 
 .offer-card {
   padding: 26px;
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.offer-card:hover {
+  box-shadow: 0 22px 52px rgba(63, 49, 38, 0.14);
+  border-color: rgba(200, 161, 90, 0.28);
 }
 
 .offer-card h2 {
@@ -289,6 +295,12 @@ a {
 .service-card {
   padding: 14px;
   height: 100%;
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.service-card:hover {
+  box-shadow: 0 22px 52px rgba(63, 49, 38, 0.14);
+  border-color: rgba(200, 161, 90, 0.28);
 }
 
 .service-card img {
@@ -296,6 +308,11 @@ a {
   width: 100%;
   object-fit: cover;
   margin-bottom: 16px;
+  transition: transform 0.5s ease;
+}
+
+.service-card:hover img {
+  transform: scale(1.04);
 }
 
 .service-card h3 {
@@ -333,6 +350,13 @@ a {
 .testimonial-card {
   padding: 24px;
   min-height: 100%;
+  transition: box-shadow 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+}
+
+.testimonial-card:hover {
+  box-shadow: 0 22px 52px rgba(63, 49, 38, 0.12);
+  border-color: rgba(200, 161, 90, 0.22);
+  transform: translateY(-3px);
 }
 
 .testimonial-card p {
@@ -343,6 +367,12 @@ a {
 
 .contact-card {
   padding: 28px;
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.contact-card:hover {
+  box-shadow: 0 22px 52px rgba(63, 49, 38, 0.12);
+  border-color: rgba(200, 161, 90, 0.22);
 }
 
 .contact-card i {
