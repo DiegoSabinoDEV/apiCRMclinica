@@ -1,0 +1,101 @@
+RELATORIO TECNICO - CRM HARMONNY
+
+1. O QUE FOI FEITO
+
+Foi criada a base completa de um ecossistema para a Harmonny Clinica de Estetica Avancada, composto por:
+- Landing page de alta conversao
+- Assistente de triagem com fluxo para WhatsApp
+- Backend CRM com autenticação, rotas e integração com n8n/Evolution API
+- Documentacao tecnica de arquitetura, schema e API
+- Frontend administrativo do CRM em Next.js com identidade visual personalizada
+
+2. LANDING PAGE
+
+Entregue com:
+- Hero com oferta e CTA para assistente
+- Seções de serviços, prova social, localizacao e contato
+- Botao flutuante abrindo triagem
+- Integração com webhook para salvar lead no CRM
+
+3. FLUXO DE AUTOMACAO
+
+Fluxo atual:
+1. Usuario entra na landing
+2. Abre assistente e responde triagem
+3. Lead é enviado ao backend CRM
+4. Backend registra o lead
+5. Lead pode ser repassado para a secretária via WhatsApp/Evolution API
+6. CRM centraliza o histórico para proximo atendimento
+
+4. BACKEND CRM
+
+Foi criado um backend MVP com:
+- Login com JWT
+- Controle por perfis de acesso
+- Cadastro e listagem de leads
+- Cadastro e listagem de pacientes
+- Agenda de atendimentos
+- Prontuario clínico básico
+- Estoque inteligente
+- Financeiro com invoices e pagamentos
+- Webhooks para landing e Evolution API
+- Seed inicial com admin e serviços padrão
+
+5. FRONTEND CRM
+
+Foi criado um frontend inicial com:
+- Tela de login
+- Dashboard
+- Tela de leads
+- Tela de pacientes
+- Tela de agenda
+- Layout premium com cores bronze, ouro e oliva
+- Logo vetorial própria da Harmonny para uso interno do CRM
+
+6. DOCUMENTACAO TECNICA
+
+Também foram entregues:
+- Arquitetura do CRM
+- Schema SQL
+- Contrato de API
+- Backlog de implementação
+- Prompt do agente da clínica
+- Workflow n8n com notas explicativas
+
+7. O QUE O CRM JA PODE FAZER
+
+- Receber leads da landing e WhatsApp
+- Qualificar pacientes por procedimento, objetivo e urgência
+- Centralizar dados de contato
+- Organizar agenda e status de atendimento
+- Guardar histórico clínico inicial
+- Registrar faturas e pagamentos
+- Controlar estoque por movimentação
+- Expor base pronta para automação no n8n
+
+8. O QUE AINDA PODE SER FEITO
+
+- Prontuário 360 completo com anamnese detalhada
+- Galeria de antes e depois por procedimento
+- Alertas de retoque e recorrência
+- BI com funil, LTV e performance comercial
+- Fluxos automáticos de reativacao
+- Portal do paciente
+- Assinatura digital de termos
+- Integração com Google Calendar e gateway de pagamento
+- Interface mobile/tablet mais refinada
+- Auditoria avançada e logs de segurança
+
+9. TECNOLOGIA SUGERIDA
+
+- Frontend: Next.js
+- Backend: Fastify + TypeScript
+- Banco: PostgreSQL
+- ORM: Prisma
+- Automação: n8n
+- WhatsApp: Evolution API
+- Infra local: Docker + Redis
+
+10. OBSERVACAO FINAL
+
+A arquitetura foi pensada para evoluir de forma modular, começando pequena e confiável, mas pronta para crescer para um CRM completo de vendas, atendimento e fidelização para estética avançada.

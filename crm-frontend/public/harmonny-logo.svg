@@ -1,0 +1,13 @@
+<svg width="240" height="72" viewBox="0 0 240 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="72" rx="18" fill="#3F3126"/>
+  <circle cx="40" cy="36" r="20" fill="url(#g)"/>
+  <path d="M31 44V28H36L40 36L44 28H49V44H45V35.5L40 43L35 35.5V44H31Z" fill="#FBF8F4"/>
+  <text x="72" y="33" fill="#FBF8F4" font-size="18" font-family="Georgia, serif" font-weight="700">Harmonny</text>
+  <text x="72" y="50" fill="#C8A15A" font-size="10" font-family="Arial, sans-serif" letter-spacing="2">CRM CLÍNICA</text>
+  <defs>
+    <linearGradient id="g" x1="20" y1="16" x2="60" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C8A15A"/>
+      <stop offset="1" stop-color="#7A5A3A"/>
+    </linearGradient>
+  </defs>
+</svg>
