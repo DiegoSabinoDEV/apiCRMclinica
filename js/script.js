@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const apiBaseUrl = window.HARMONNY_API_BASE_URL || (window.location.origin && window.location.origin !== "null" ? window.location.origin : "http://localhost:3001");
   const chat = document.getElementById("assistantChat");
   const choices = document.getElementById("assistantChoices");
   const inputWrap = document.getElementById("assistantInputWrap");
@@ -116,13 +117,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function finishFlow() {
     clearInputs();
-    addMessage(
-      "Perfeito. Já organizei suas informações para a equipe. Agora é só enviar para a secretária continuar seu atendimento.",
-      "bot"
-    );
-    whatsapp.href = buildWhatsAppMessage();
+    addMessage("Perfeito. Estou registrando seu atendimento para a equipe Harmonny.", "bot");
+
+    const payload = {
+      nome: state.name,
+      telefone: state.phone,
+      procedimento: state.procedure,
+      objetivo: state.goal,
+      urgencia: state.urgency,
+      origem: "landing-page",
+    };
+
+    whatsapp.textContent = "Aguarde...";
     whatsapp.classList.remove("d-none");
     restart.classList.remove("d-none");
+
+    fetch(`${apiBaseUrl}/api/v1/webhooks/landing`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        addMessage("Lead salvo com sucesso. Agora você pode seguir para o contato da secretária.", "bot");
+        whatsapp.textContent = "Enviar para secretária";
+        whatsapp.href = buildWhatsAppMessage();
+      })
+      .catch(() => {
+        addMessage("Não consegui salvar agora, mas já deixei sua triagem pronta para envio.", "bot");
+        whatsapp.textContent = "Enviar para secretária";
+        whatsapp.href = buildWhatsAppMessage();
+      });
   }
 
   function handleAnswer(answer) {

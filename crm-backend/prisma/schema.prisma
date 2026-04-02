@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  passwordHash String
+  role      String
+  active    Boolean  @default(true)
+  lastLoginAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leads          Lead[]
+  appointments   Appointment[] @relation("ProfessionalAppointments")
+  consultations  Consultation[] @relation("ProfessionalConsultations")
+  procedures     Procedure[] @relation("ProfessionalProcedures")
+}
+
+model Patient {
+  id        String   @id @default(uuid())
+  fullName  String
+  cpf       String?  @unique
+  birthDate DateTime?
+  gender    String?
+  phone     String
+  email     String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leads         Lead[]
+  appointments  Appointment[]
+  consultations Consultation[]
+  procedures    Procedure[]
+  photos        BeforeAfterPhoto[]
+  invoices      Invoice[]
+  consents      ConsentForm[]
+}
+
+model Lead {
+  id                String   @id @default(uuid())
+  patientId         String?
+  contactName       String
+  contactPhone      String
+  sourceChannel     String
+  originCampaign    String?
+  status            String
+  procedureInterest String?
+  goal              String?
+  urgency           String?
+  assignedToUserId  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  patient         Patient? @relation(fields: [patientId], references: [id])
+  assignedToUser  User?    @relation(fields: [assignedToUserId], references: [id])
+  appointments    Appointment[]
+}
+
+model Service {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  category        String
+  durationMinutes Int      @default(30)
+  retouchDaysMin  Int?
+  retouchDaysMax  Int?
+  priceBase       Decimal? @db.Decimal(12, 2)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  appointments Appointment[]
+  procedures   Procedure[]
+}
+
+model Appointment {
+  id                      String   @id @default(uuid())
+  patientId               String
+  leadId                  String?
+  professionalId          String?
+  serviceId               String?
+  scheduledAt             DateTime
+  status                  String
+  notes                   String?
+  googleCalendarEventId   String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  patient        Patient  @relation(fields: [patientId], references: [id])
+  lead           Lead?    @relation(fields: [leadId], references: [id])
+  professional   User?    @relation("ProfessionalAppointments", fields: [professionalId], references: [id])
+  service        Service? @relation(fields: [serviceId], references: [id])
+  consultations  Consultation[]
+  procedures     Procedure[]
+  invoice        Invoice[]
+}
+
+model Consultation {
+  id             String   @id @default(uuid())
+  patientId      String
+  appointmentId  String?
+  professionalId String?
+  anamnesisJson  Json
+  clinicalNotes  String?
+  recommendedPlan String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  professional  User?    @relation("ProfessionalConsultations", fields: [professionalId], references: [id])
+}
+
+model Procedure {
+  id             String   @id @default(uuid())
+  patientId      String
+  appointmentId  String?
+  professionalId String?
+  serviceId      String
+  performedAt    DateTime @default(now())
+  dosageJson     Json
+  anatomicalArea String?
+  status         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  professional  User?    @relation("ProfessionalProcedures", fields: [professionalId], references: [id])
+  service       Service  @relation(fields: [serviceId], references: [id])
+  photos        BeforeAfterPhoto[]
+  movements     InventoryMovement[]
+}
+
+model BeforeAfterPhoto {
+  id          String   @id @default(uuid())
+  patientId   String
+  procedureId String?
+  takenAt     DateTime @default(now())
+  photoType   String
+  fileUrl     String
+  tags        Json
+  createdAt   DateTime @default(now())
+
+  patient   Patient   @relation(fields: [patientId], references: [id])
+  procedure Procedure? @relation(fields: [procedureId], references: [id])
+}
+
+model InventoryItem {
+  id            String   @id @default(uuid())
+  name          String
+  sku           String?  @unique
+  unit          String
+  minimumStock  Decimal  @default(0) @db.Decimal(12, 2)
+  currentStock  Decimal  @default(0) @db.Decimal(12, 2)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  movements InventoryMovement[]
+}
+
+model InventoryMovement {
+  id                String   @id @default(uuid())
+  inventoryItemId   String
+  procedureId       String?
+  movementType      String
+  quantity          Decimal  @db.Decimal(12, 2)
+  unitCost          Decimal? @db.Decimal(12, 2)
+  createdAt         DateTime @default(now())
+
+  item      InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  procedure Procedure?    @relation(fields: [procedureId], references: [id])
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  patientId     String
+  appointmentId String?
+  totalAmount   Decimal  @db.Decimal(12, 2)
+  installments  Int      @default(1)
+  status        String
+  dueDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  patient     Patient      @relation(fields: [patientId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+  payments    Payment[]
+}
+
+model Payment {
+  id                   String   @id @default(uuid())
+  invoiceId            String
+  amount               Decimal  @db.Decimal(12, 2)
+  paidAt               DateTime @default(now())
+  method               String
+  gatewayTransactionId String?
+  createdAt            DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model ConsentForm {
+  id          String   @id @default(uuid())
+  patientId   String
+  consentType String
+  signedAt    DateTime?
+  fileUrl     String?
+  metadata    Json
+  createdAt   DateTime @default(now())
+
+  patient Patient @relation(fields: [patientId], references: [id])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  entityName String
+  entityId   String
+  action     String
+  beforeJson Json?
+  afterJson  Json?
+  createdAt  DateTime @default(now())
+}

@@ -1,0 +1,216 @@
+{
+  "name": "Harmonny - Triagem e Resposta",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Recebe os dados da landing page ou do webhook da Evolution API.\nCampos esperados: nome, telefone, procedimento, objetivo, urgencia e origem.\nO fluxo normaliza a entrada e gera um resumo para o atendimento humano.",
+        "height": 200,
+        "width": 380,
+        "color": 6
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0001",
+      "name": "Nota - Visão Geral",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [260, 60]
+    },
+    {
+      "parameters": {
+        "path": "harmonny-assistente",
+        "httpMethod": "POST",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0002",
+      "name": "Receber Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [540, 240]
+    },
+    {
+      "parameters": {
+        "content": "Este node padroniza os dados recebidos.\nEle aceita payloads vindos do front-end ou de uma mensagem encaminhada pela Evolution API.\nAqui também garantimos um formato único para seguir a triagem.",
+        "height": 200,
+        "width": 390,
+        "color": 5
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0003",
+      "name": "Nota - Normalização",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [820, 60]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\n\nconst pick = (...values) => values.find((value) => value !== undefined && value !== null && String(value).trim() !== '') ?? '';\n\nconst nome = pick(body.nome, body.name, body.nomeCliente, body.customerName);\nconst telefone = pick(body.telefone, body.phone, body.whatsapp, body.numero);\nconst procedimento = pick(body.procedimento, body.procedure, body.servico, body.service);\nconst objetivo = pick(body.objetivo, body.goal, body.intencao, body.intention);\nconst urgencia = pick(body.urgencia, body.urgency, body.prazo, body.timeframe);\nconst origem = pick(body.origem, body.source, body.channel, 'landing-page');\n\nconst missingFields = [];\nif (!nome) missingFields.push('nome');\nif (!telefone) missingFields.push('telefone');\nif (!procedimento) missingFields.push('procedimento');\nif (!objetivo) missingFields.push('objetivo');\nif (!urgencia) missingFields.push('urgencia');\n\nconst isQualified = missingFields.length === 0;\nconst leadStage = isQualified ? 'qualificado' : 'em_triagem';\nconst priority = urgencia.toLowerCase().includes('hoje') || urgencia.toLowerCase().includes('semana') ? 'alta' : 'normal';\n\nconst assistantReply = isQualified\n  ? `Perfeito, ${nome}. Já identifiquei seu interesse em ${procedimento}. Vou encaminhar sua avaliação para a equipe da Harmonny e você receberá o retorno com prioridade ${priority}.`\n  : `Para seguir com seu atendimento na Harmonny, preciso de: ${missingFields.join(', ')}.`;\n\nconst secretarySummary = [\n  `Nome: ${nome || 'não informado'}`,\n  `Telefone: ${telefone || 'não informado'}`,\n  `Procedimento: ${procedimento || 'não informado'}`,\n  `Objetivo: ${objetivo || 'não informado'}`,\n  `Urgência: ${urgencia || 'não informado'}`,\n  `Origem: ${origem}`,\n  `Status: ${leadStage}`,\n  `Prioridade: ${priority}`,\n].join('\\n');\n\nreturn [{\n  json: {\n    nome,\n    telefone,\n    procedimento,\n    objetivo,\n    urgencia,\n    origem,\n    missingFields,\n    isQualified,\n    leadStage,\n    priority,\n    assistantReply,\n    secretarySummary,\n  },\n}];"
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0004",
+      "name": "Normalizar e Qualificar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1060, 240]
+    },
+    {
+      "parameters": {
+        "content": "Aqui é feita a decisão principal.\nSe faltar dado essencial, o fluxo responde pedindo o complemento.\nSe estiver completo, envia o resumo para a secretária e retorna uma confirmação ao paciente.",
+        "height": 200,
+        "width": 390,
+        "color": 4
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0005",
+      "name": "Nota - Decisão",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1320, 60]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.isQualified}}",
+              "value2": false
+            }
+          ]
+        }
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0006",
+      "name": "Dados incompletos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1300, 240]
+    },
+    {
+      "parameters": {
+        "content": "Se os dados estiverem incompletos, este bloco devolve uma resposta curta e educada pedindo apenas o que falta.\nIsso reduz atrito e mantém o lead avançando na conversa.",
+        "height": 170,
+        "width": 380,
+        "color": 3
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0007",
+      "name": "Nota - Resposta Parcial",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1540, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"status\": \"partial\",\n  \"leadStage\": \"{{$json.leadStage}}\",\n  \"missingFields\": {{$json.missingFields}},\n  \"message\": \"{{$json.assistantReply}}\"\n}"
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0008",
+      "name": "Responder Parcial",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1760, 480]
+    },
+    {
+      "parameters": {
+        "content": "Se o lead estiver qualificado, este bloco envia o resumo para a secretária/atendimento.\nConfigure a Evolution API e os dados de conexão antes de ativar o fluxo em produção.",
+        "height": 190,
+        "width": 410,
+        "color": 2
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0009",
+      "name": "Nota - Evolução API",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1540, 40]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.EVOLUTION_API_URL}}/message/sendText/{{$env.EVOLUTION_INSTANCE}}",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.EVOLUTION_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={\n  \"number\": \"{{$json.telefone}}\",\n  \"text\": \"Resumo do lead Harmonny:%0A%0A{{$json.secretarySummary}}\"\n}"
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0010",
+      "name": "Enviar para Evolution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1760, 240],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"status\": \"qualified\",\n  \"leadStage\": \"{{$json.leadStage}}\",\n  \"priority\": \"{{$json.priority}}\",\n  \"message\": \"{{$json.assistantReply}}\",\n  \"summary\": \"{{$json.secretarySummary}}\"\n}"
+      },
+      "id": "c1f1a1d4-1d6c-4a83-9e2a-0011",
+      "name": "Responder Completo",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1980, 240]
+    }
+  ],
+  "connections": {
+    "Receber Lead": {
+      "main": [
+        [
+          {
+            "node": "Normalizar e Qualificar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar e Qualificar": {
+      "main": [
+        [
+          {
+            "node": "Dados incompletos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados incompletos?": {
+      "main": [
+        [
+          {
+            "node": "Responder Parcial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar para Evolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar para Evolution": {
+      "main": [
+        [
+          {
+            "node": "Responder Completo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": []
+}
