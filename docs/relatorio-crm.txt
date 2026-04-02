@@ -108,3 +108,10 @@ Também foram entregues:
 10. OBSERVACAO FINAL
 
 A arquitetura foi pensada para evoluir de forma modular, começando pequena e confiável, mas pronta para crescer para um CRM completo de vendas, atendimento e fidelização para estética avançada.
+
+11. DEPLOY E DOMINIOS
+
+- Site institucional previsto em www.clinicaharmonny.com.br
+- CRM previsto em crm.clinicaharmonny.com.br
+- API recomendada em api.crm.clinicaharmonny.com.br
+- Guia de deploy e DNS documentado em docs/deploy-dominios-hostinger.md
